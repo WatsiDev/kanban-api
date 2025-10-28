@@ -4,6 +4,8 @@ const db = require('../config/db');
 // Helpers
 const getConn = () => db.promise();
 
+// POST http://localhost:3000/api/projects
+// Crea un nuevo proyecto
 exports.createProject = async (req, res) => {
   try {
     const { name, description = null, created_by = null } = req.body;
@@ -22,6 +24,8 @@ exports.createProject = async (req, res) => {
   }
 };
 
+// GET http://localhost:3000/api/projects
+// Lista todos los proyectos
 exports.getProjects = async (_req, res) => {
   try {
     const [rows] = await getConn().query('SELECT * FROM projects ORDER BY created_at DESC');
@@ -32,6 +36,8 @@ exports.getProjects = async (_req, res) => {
   }
 };
 
+// GET http://localhost:3000/api/projects/:id
+// Obtiene un proyecto por su id
 exports.getProjectById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -44,6 +50,8 @@ exports.getProjectById = async (req, res) => {
   }
 };
 
+// PUT http://localhost:3000/api/projects/:id
+// Actualiza (parcial o total) un proyecto
 exports.updateProject = async (req, res) => {
   try {
     const { id } = req.params;
@@ -70,6 +78,8 @@ exports.updateProject = async (req, res) => {
   }
 };
 
+// DELETE http://localhost:3000/api/projects/:id
+// Elimina un proyecto
 exports.deleteProject = async (req, res) => {
   try {
     const { id } = req.params;
@@ -85,6 +95,8 @@ exports.deleteProject = async (req, res) => {
 
 /* ------- MEMBERS (colaboradores del proyecto) ------- */
 
+// GET http://localhost:3000/api/projects/:id/members
+// Lista los miembros (colaboradores) de un proyecto
 exports.getProjectMembers = async (req, res) => {
   try {
     const { id } = req.params; // project_id
@@ -103,6 +115,8 @@ exports.getProjectMembers = async (req, res) => {
   }
 };
 
+// POST http://localhost:3000/api/projects/:id/members
+// Agrega o actualiza un miembro del proyecto (user_id, role)
 exports.addProjectMember = async (req, res) => {
   try {
     const { id } = req.params; // project_id
@@ -129,6 +143,8 @@ exports.addProjectMember = async (req, res) => {
   }
 };
 
+// PATCH http://localhost:3000/api/projects/:id/members/:userId
+// Cambia el rol de un miembro del proyecto
 exports.updateProjectMemberRole = async (req, res) => {
   try {
     const { id, userId } = req.params; // project_id, user_id
@@ -154,6 +170,8 @@ exports.updateProjectMemberRole = async (req, res) => {
   }
 };
 
+// DELETE http://localhost:3000/api/projects/:id/members/:userId
+// Elimina un miembro del proyecto
 exports.removeProjectMember = async (req, res) => {
   try {
     const { id, userId } = req.params;
@@ -170,11 +188,13 @@ exports.removeProjectMember = async (req, res) => {
 };
 
 /* ------- (Opcional) Columns del proyecto ------- */
+// GET http://localhost:3000/api/projects/:id/columns
+// (Opcional) Lista las columnas de un proyecto
 exports.getProjectColumns = async (req, res) => {
   try {
     const { id } = req.params;
     const [rows] = await getConn().query(
-      'SELECT * FROM columns WHERE project_id = ? ORDER BY position ASC, id ASC',
+      'SELECT * FROM columns WHERE project_id = ? ORDER BY id ASC',
       [id]
     );
     res.json(rows);

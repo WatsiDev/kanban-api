@@ -1,31 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/db');
+const controller = require('../controllers/columnController');
 
-// POST /api/columns → crear columna
-router.post('/', (req, res) => {
-  const { name, position } = req.body;
+// Columns routes
+// POST /api/columns -> crear columna dentro de un proyecto (body debe incluir project_id)
+router.post('/', controller.createColumn);
 
-  if (!name || typeof position !== 'number') {
-    return res.status(400).json({ error: 'Faltan campos requeridos' });
-  }
+// GET /api/columns -> listar columnas (opcional: ?project_id=123 para filtrar por proyecto)
+router.get('/', controller.getColumns);
 
-  db.query(
-    'INSERT INTO columns (name, position) VALUES (?, ?)',
-    [name, position],
-    (err, result) => {
-      if (err) return res.status(500).json(err);
-      res.status(201).json({ id: result.insertId, name, position });
-    }
-  );
-});
+// GET /api/columns/:id -> obtener columna por id
+router.get('/:id', controller.getColumnById);
 
-// GET /api/columns → listar columnas
-router.get('/', (req, res) => {
-  db.query('SELECT * FROM columns ORDER BY position', (err, results) => {
-    if (err) return res.status(500).json(err);
-    res.json(results);
-  });
-});
+// PUT /api/columns/:id -> actualizar columna (name)
+router.put('/:id', controller.updateColumn);
+
+// DELETE /api/columns/:id -> eliminar columna
+router.delete('/:id', controller.deleteColumn);
 
 module.exports = router;
